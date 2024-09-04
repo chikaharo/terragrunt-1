@@ -110,13 +110,13 @@ locals {
     }
 
     database_setting = {
-      name = "${local.project_name}-${local.env}-db"
+      name = "t${local.project_name}-${local.env}-db"
       engine         = "aurora-mysql"
       master_username = "admin"
       master_password = "password"
       # vpc_id               = local.vpc_id
       create_db_subnet_group = true
-      db_subnet_group_name = "${local.project_name}-${local.env}-subnet-group"
+      db_subnet_group_name = "t${local.project_name}-${local.env}-subnet-group"
       # subnets = local.db_subnet_group
       create_security_group = false
       storage_encrypted   = true
