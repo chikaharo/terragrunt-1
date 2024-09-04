@@ -1,7 +1,7 @@
 locals {
     env_vars     = read_terragrunt_config(find_in_parent_folders("env.hcl", "env.hcl"))
     env = local.env_vars.locals.environment
-    project_name = "3108app"
+    project_name = "sep-app"
 
     root_domain = "dinhuy.io.vn"
     domain_names = {
@@ -11,14 +11,14 @@ locals {
     }
 
     vpc_settings = {
-        name = "3108-vpc"
+        name = "sepapp-vpc"
         cidr = "10.0.0.0/16"
 
         azs             = ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"]
         private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-        public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+        public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
         public_subnet_cidrs = ["10.0.4.0/24", "10.0.6.0/24"]
-        private_subnet_cidrs = ["10.0.10.0/24"]
+        private_subnet_cidrs = ["10.0.10.0/24", "10.0.12.0/24"]
 
         enable_nat_gateway = true
         enable_vpn_gateway = false
@@ -218,6 +218,11 @@ locals {
         cpu = 512
         memory_reservation = 512
         memory = 512
+        target_cpu = 128
+        target_mem = 128
+        scale_in_cooldown = 300
+        scale_out_cooldown = 60 
+
         assign_public_ip = true
         port = 80
 

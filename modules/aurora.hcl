@@ -21,6 +21,7 @@ dependency "vpc" {
   mock_outputs = {
     vpc_id          = "vpc-123"
     private_subnet_1_id = "subnet-123"
+    private_subnet_2_id = "subnet-345"
   }
 }
 
@@ -33,7 +34,7 @@ inputs = {
   // vpc_id                                     = "vpc-0392f0b0fe7e20bb6"
   create_db_subnet_group                     = local.global_vars.locals.database_setting["create_db_subnet_group"]
   db_subnet_group_name                       = local.global_vars.locals.database_setting["db_subnet_group_name"]
-  subnets                                    = [dependency.vpc.outputs.private_subnet_1_id]
+  subnets                                    = [dependency.vpc.outputs.private_subnet_1_id, dependency.vpc.outputs.private_subnet_2_id]
   // subnets                                    = ["subnet-004e89ebf3116e4df", "subnet-0b8b03303128d3720"]
   create_security_group                      = local.global_vars.locals.database_setting["create_security_group"]
   apply_immediately                          = local.global_vars.locals.database_setting["apply_immediately"]

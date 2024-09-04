@@ -57,7 +57,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   tags = {
-    Name = "ec2_sg"
+    Name = "alb_sg"
   }
 }
 resource "aws_security_group" "ecs_sg" {
@@ -75,8 +75,8 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   ingress {
-    from_port = "-1"
-    to_port   = "-1"
+    from_port = 0
+    to_port   = 0
     protocol  = "-1"
     # cidr_blocks = [for ip in var.cidr_blocks : ip]
     cidr_blocks = ["0.0.0.0/0"]
@@ -91,7 +91,7 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   tags = {
-    Name = "éc_sg"
+    Name = "ecs_sg"
   }
 }
 
@@ -176,6 +176,6 @@ resource "aws_security_group" "rds_sg" {
   }
 
   tags = {
-    Name = "ec2_sg"
+    Name = "rds_sg"
   }
 }
