@@ -27,13 +27,14 @@ dependency "vpc" {
   mock_outputs = {
     vpc_id         = "vpc-123"
     public_subnet_1_id = "pub-subnet-123"
+    public_subnet_2_id = "pub-subnet-123"
   }
 }
 
 inputs = {
   name            = local.global_vars.locals.alb_setting["name"]
   vpc_id          = dependency.vpc.outputs.vpc_id
-  subnets         = [dependency.vpc.outputs.public_subnet_1_id]
+  subnets         = [dependency.vpc.outputs.public_subnet_1_id, dependency.vpc.outputs.public_subnet_2_id]
   create_security_group = local.global_vars.locals.alb_setting["create_security_group"]
   # Security Group
   security_groups = [dependency.sg.outputs.alb_sg]

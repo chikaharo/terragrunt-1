@@ -112,8 +112,8 @@ locals {
     database_setting = {
       name = "${local.project_name}-${local.env}-db"
       engine         = "aurora-mysql"
-      master_username = "root"
-      master_password = "lWwD7cukSeWrwlsQwM7a"
+      master_username = "admin"
+      master_password = "password"
       # vpc_id               = local.vpc_id
       create_db_subnet_group = true
       db_subnet_group_name = "${local.project_name}-${local.env}-subnet-group"
@@ -205,11 +205,25 @@ locals {
           }
         ]
 
+    }
 
-        tags = {
-            Environment = "${local.env_vars.locals.env}"
-            Project     = "${local.project_name}"
-        }
+
+    ecs_settings = {
+        launch_type                        = "FARGATE"
+        propagate_tags                     = "SERVICE"
+        deployment_minimum_healthy_percent = 100
+        ignore_changes_task_definition     = false
+        assign_public_ip                   = true
+
+        cpu = 512
+        memory_reservation = 512
+        memory = 512
+        assign_public_ip = true
+        port = 80
+
+        min_capacity = 1
+        max_capacity = 3
+        desired_count = 1
     }
 
 

@@ -60,6 +60,40 @@ resource "aws_security_group" "alb_sg" {
     Name = "ec2_sg"
   }
 }
+resource "aws_security_group" "ecs_sg" {
+  name        = "alb_sg"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    # cidr_blocks = [for ip in var.cidr_blocks : ip]
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTP web traffic"
+  }
+
+  ingress {
+    from_port = "-1"
+    to_port   = "-1"
+    protocol  = "-1"
+    # cidr_blocks = [for ip in var.cidr_blocks : ip]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "éc_sg"
+  }
+}
 
 resource "aws_security_group" "eb_sg" {
   name        = "eb_sg"

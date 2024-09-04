@@ -3,11 +3,11 @@ terraform {
 }
 
 ## Dependencies:
-dependencies {
-  paths = [
-    "${dirname(find_in_parent_folders())}/_env/ecs/services/${local.name}",
-  ]
-}
+// dependencies {
+//   paths = [
+//     "${dirname(find_in_parent_folders())}/_env/ecs/services/${local.name}",
+//   ]
+// }
 
 dependency "cluster" {
   config_path = "${dirname(find_in_parent_folders())}/_env/ecs/clusters"
@@ -41,12 +41,12 @@ inputs = {
   name               = lower("${local.name-prefix}-${local.name}")
   cluster_name       = dependency.cluster.outputs.cluster_name
   service_name       = dependency.service.outputs.service_name
-  min_capacity       = try(local.global_vars.locals.ecs_settings[local.env]["min_capacity"], "1")
-  max_capacity       = try(local.global_vars.locals.ecs_settings["${local.name}"][local.env]["max_capacity"], "2")
-  target_cpu         = try(local.global_vars.locals.ecs_settings[local.env]["target_cpu"], "70")
-  target_mem         = try(local.global_vars.locals.ecs_settings[local.env]["target_mem"], "75")
-  scale_in_cooldown  = try(local.global_vars.locals.ecs_settings[local.env]["scale_in_cooldown"], "300")
-  scale_out_cooldown = try(local.global_vars.locals.ecs_settings[local.env]["scale_out_cooldown"], "60")
+  min_capacity       = try(local.global_vars.locals.ecs_settings["min_capacity"], "1")
+  max_capacity       = try(local.global_vars.locals.ecs_settings["${local.name}"]["max_capacity"], "2")
+  target_cpu         = try(local.global_vars.locals.ecs_settings["target_cpu"], "70")
+  target_mem         = try(local.global_vars.locals.ecs_settings["target_mem"], "75")
+  scale_in_cooldown  = try(local.global_vars.locals.ecs_settings["scale_in_cooldown"], "300")
+  scale_out_cooldown = try(local.global_vars.locals.ecs_settings["scale_out_cooldown"], "60")
   timezone           = try(local.global_vars.locals.time_zone, "Asia/Tokyo")
   schedules          = try(local.global_vars.locals.ecs_settings["${local.name}"][local.env]["schedules"], [])
 }

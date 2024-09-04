@@ -4,7 +4,7 @@ terraform {
 locals {
   global_vars  = read_terragrunt_config(find_in_parent_folders("global.hcl"), {})
   env_vars     = read_terragrunt_config(find_in_parent_folders("env.hcl"), {})
-  env          = local.env_vars.locals.env
+  env          = local.env_vars.locals.environment
   name         = basename(dirname("${get_terragrunt_dir()}/../.."))
   project_name = local.global_vars.locals.project_name
 }
@@ -29,13 +29,15 @@ inputs = {
   engine                                     = local.global_vars.locals.database_setting["engine"]
   master_username                            = local.global_vars.locals.database_setting["master_username"]
   master_password                            = local.global_vars.locals.database_setting["master_password"]
-  vpc_id                                     = dependency.vpc.outputs.vpc_id
+  // vpc_id                                     = dependency.vpc.outputs.vpc_id
+  vpc_id                                     = "vpc-0392f0b0fe7e20bb6"
   create_db_subnet_group                     = local.global_vars.locals.database_setting["create_db_subnet_group"]
   db_subnet_group_name                       = local.global_vars.locals.database_setting["db_subnet_group_name"]
-  subnets                                    = [dependency.vpc.outputs.private_subnet_1_id]
+  // subnets                                    = [dependency.vpc.outputs.private_subnet_1_id]
+  subnets                                    = ["subnet-004e89ebf3116e4df", "subnet-0b8b03303128d3720"]
   create_security_group                      = local.global_vars.locals.database_setting["create_security_group"]
   apply_immediately                          = local.global_vars.locals.database_setting["apply_immediately"]
-  vpc_security_group_ids                     = [dependency.sg.outputs.rds_sg]
+  vpc_security_group_ids                     = [dependency.sg.outputs.rds_sg.id]
   engine_version                             = local.global_vars.locals.database_setting["${local.env}"]["engine_version"]
   instance_class                             = local.global_vars.locals.database_setting["${local.env}"]["instance_class"]
   instances                                  = local.global_vars.locals.database_setting["${local.env}"]["instances"]

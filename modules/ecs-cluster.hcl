@@ -40,7 +40,7 @@ inputs = {
     }
   }
 
-  fargate_capacity_providers = local.env == "prod" ? {
+  fargate_capacity_providers =  {
     FARGATE = {
       default_capacity_provider_strategy = {
         weight = 1
@@ -49,16 +49,10 @@ inputs = {
     }
     FARGATE_SPOT = {
       default_capacity_provider_strategy = {
-        weight = 4
-      }
-    }
-    } : {
-    FARGATE_SPOT = {
-      default_capacity_provider_strategy = {
         weight = 1
       }
     }
-  }
+    } 
 
   tags = local.tags
 }

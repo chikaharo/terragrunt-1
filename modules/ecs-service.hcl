@@ -35,51 +35,48 @@ dependency "alb" {
 }
 
 dependency "iam_task" {
-  config_path = "${dirname(find_in_parent_folders())}/env/global/iam/roles/ecs-task-exec"
+  config_path = "${dirname(find_in_parent_folders())}/_env/iam/ecs-task-exec"
 }
 
 dependency "iam_task_exec" {
-  config_path = "${dirname(find_in_parent_folders())}/env/global/iam/roles/ecs-task-exec"
+  config_path = "${dirname(find_in_parent_folders())}/_env/iam/ecs-task-exec"
 }
 
 dependency "iam_service" {
-  config_path = "${dirname(find_in_parent_folders())}/env/global/iam/roles/ecs-service"
+  config_path = "${dirname(find_in_parent_folders())}/_env/iam/ecs-service"
 }
 
 dependency "sg" {
-  config_path = "${dirname(find_in_parent_folders())}/env/${local.aws_region}/security-groups/${local.name}"
+  config_path = "${dirname(find_in_parent_folders())}/_env/sg"
+  mock_outputs = {
+    alb_sg = "alb-sg-1234"
+    ecs_sg = "ecs-sg-123"
+  }
 }
 
-dependency "sg_lb" {
-  config_path = "${dirname(find_in_parent_folders())}/${local.folder_name}/${local.aws_region}/security-groups/lb"
-}
 
 ## Variables:
 locals {
   global_vars = read_terragrunt_config(find_in_parent_folders("global.hcl"), {})
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"), {})
   env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"), {})
-  env         = local.env_vars.locals.env
-  env_desc    = local.env_vars.locals.env_desc
-  aws_region  = local.region_vars.locals.aws_region
+  env         = local.env_vars.locals.environment
+  aws_region  = local.region_vars.locals.region
   name        = basename(get_terragrunt_dir())
   name-prefix = lower("${local.global_vars.locals.project_name}-${local.env}")
 
   launch_type      = try(local.global_vars.locals.ecs_settings.launch_type, "FARGATE")
   assign_public_ip = try(local.global_vars.locals.ecs_settings.assign_public_ip, false)
   folder_name      = local.env == "prod" ? "env" : "common"
-  tags = merge(
-    try(local.global_vars.locals.tags, {}),
-    {
+  tags = {
       Name = "${local.name-prefix}-${local.name}"
-      Env  = local.env_desc
+      Env  = local.env
     }
-  )
 }
 
 inputs = {
   name                               = "${local.name-prefix}-${local.name}"
-  alb_security_group                 = dependency.sg_lb.outputs.security_group_id
+  alb_security_group                 = dependency.sg.outputs.alb_sg.id
   container_definition_json          = dependency.definition.outputs.json_map_encoded_list
   ecs_cluster_arn                    = dependency.cluster.outputs.cluster_arn
   launch_type                        = local.launch_type
@@ -88,9 +85,9 @@ inputs = {
   task_exec_role_arn                 = [dependency.iam_task_exec.outputs.iam_role_arn]
   service_role_arn                   = dependency.iam_service.outputs.iam_role_arn
   vpc_id                             = dependency.vpc.outputs.vpc_id
-  security_group_ids                 = [dependency.sg.outputs.security_group_id]
+  security_group_ids                 = [dependency.sg.outputs.ecs_sg.id]
   security_group_enabled             = false
-  subnet_ids                         = local.assign_public_ip ? dependency.vpc.outputs.public_subnets : dependency.vpc.outputs.private_subnets
+  subnet_ids                         = local.assign_public_ip ? [dependency.vpc.outputs.public_subnet_1_id, dependency.vpc.outputs.public_subnet_2_id] : [dependency.vpc.outputs.private_subnet_1_id]
   ignore_changes_task_definition     = try(local.global_vars.locals.ecs_settings.ignore_changes_task_definition, false)
   network_mode                       = local.launch_type != "FARGATE" ? "bridge" : "awsvpc"
   assign_public_ip                   = local.assign_public_ip
@@ -98,7 +95,7 @@ inputs = {
   deployment_minimum_healthy_percent = try(local.global_vars.locals.ecs_settings.deployment_minimum_healthy_percent, 100)
   deployment_maximum_percent         = try(local.global_vars.locals.ecs_settings.deployment_maximum_percent, "200")
   deployment_controller_type         = try(local.global_vars.locals.ecs_settings[local.name].deployment_controller_type, "ECS")
-  desired_count                      = try(local.global_vars.locals.ecs_settings[local.env]["desired_count"], 1)
+  desired_count                      = try(local.global_vars.locals.ecs_settings["desired_count"], 1)
   task_memory                        = try(local.global_vars.locals.ecs_settings[local.name][local.env]["task_memory"], 512) # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size
   task_cpu                           = try(local.global_vars.locals.ecs_settings[local.name][local.env]["task_cpu"], 256)
   exec_enabled                       = try(local.global_vars.locals.ecs_settings[local.env]["exec_enabled"], true)
