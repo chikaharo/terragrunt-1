@@ -1,7 +1,7 @@
 locals {
     env_vars     = read_terragrunt_config(find_in_parent_folders("env.hcl", "env.hcl"))
     env = local.env_vars.locals.environment
-    project_name = "3108app"
+    project_name = "sepapp-dinhuy975"
 
     root_domain = "dinhuy.io.vn"
     domain_names = {
@@ -12,13 +12,15 @@ locals {
 
     vpc_settings = {
         name = "3108-vpc"
-        cidr = "10.0.0.0/16"
+        cidr = "10.0.0.0/20"
 
         azs             = ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"]
-        private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-        public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-        public_subnet_cidrs = ["10.0.4.0/24", "10.0.6.0/24"]
-        private_subnet_cidrs = ["10.0.10.0/24"]
+        private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+        public_subnets  = ["10.0.5.0/24", "10.0.6.0/24"]
+        database_subnets  = ["10.0.9.0/24", "10.0.10.0/24"]
+
+        // public_subnet_cidrs = ["10.0.4.0/24", "10.0.6.0/24"]
+        // private_subnet_cidrs = ["10.0.10.0/24"]
 
         enable_nat_gateway = true
         enable_vpn_gateway = false
@@ -205,12 +207,18 @@ locals {
           }
         ]
 
-
-        tags = {
-            Environment = "${local.env_vars.locals.env}"
-            Project     = "${local.project_name}"
-        }
     }
 
+    ecs_settings = {
+      launch_type                        = "FARGATE"
+      propagate_tags                     = "SERVICE"
+      deployment_minimum_healthy_percent = 100
+      ignore_changes_task_definition     = false
+      assign_public_ip                   = false
+
+      container_name =  "${local.project_name}-container"
+      cpu = 512
+      memory_reservation = 1024
+    }
 
 }

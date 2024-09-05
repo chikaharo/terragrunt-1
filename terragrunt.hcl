@@ -17,7 +17,7 @@ remote_state {
 
   config = {
     encrypt        = false
-    bucket         = "new-3108-test"
+    bucket         = "sepapp-dinhuy975"
     key = "${path_relative_to_include()}/terraform.tfstate"
 
     region         = local.aws_region

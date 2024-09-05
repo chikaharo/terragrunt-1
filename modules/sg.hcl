@@ -4,7 +4,7 @@ terraform {
 
 
 dependency "vpc" {
-  config_path = "${dirname(find_in_parent_folders())}/_env/vpc"
+  config_path = "${dirname(find_in_parent_folders())}/_env/vpc-test"
   mock_outputs = {
     vpc_id = "vpc-1234"
   }

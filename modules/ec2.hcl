@@ -24,15 +24,15 @@ dependency "key_pair"{
 }
 
 dependency "vpc" {
-  config_path = "${dirname(find_in_parent_folders())}/_env/vpc"
+  config_path = "${dirname(find_in_parent_folders())}/_env/vpc-test"
   mock_outputs = {
     public_subnets = ["pub-subnet-1", "pub-subnet-2"]
-    public_subnet1_id = "subnet-1213"
+    // public_subnet1_id = "subnet-1213"
   }
 }
 
 inputs = {
-  name =  lower("${local.project_name}-${local.env}")
+  name =  lower("${local.project_name}-${local.env}-bastion")
 
   // instance_type          = try(local.global_vars.locals.ec2_settings["${local.env}"]["instance_type"], "t3.micro")
   instance_type          = local.global_vars.locals.ec2_settings["instance_type"]
@@ -41,10 +41,12 @@ inputs = {
   monitoring             = local.global_vars.locals.ec2_settings["monitoring"]
   // iam_instance_profile  = dependency.iam_role.outputs.ec2_role
   vpc_security_group_ids = [dependency.sg.outputs.ec2_sg.id]
-  subnet_id              = "subnet-049fed8e8a28fe330"
+  // subnet_id              = "subnet-049fed8e8a28fe330"
+  subnet_id              = dependency.vpc.outputs.public_subnets[0]
+  associate_public_ip_address = true
+
   tags = {
     Name = "${local.env}-${local.project_name}-bastion"
-    Terraform = "true"
     Environment = "${local.env}"
   }
 }

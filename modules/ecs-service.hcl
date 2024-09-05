@@ -23,7 +23,7 @@ dependency "vpc" {
 }
 
 dependency "definition" {
-  config_path = "${dirname(find_in_parent_folders())}/_env/ecs/definitions/"
+  config_path = "${dirname(find_in_parent_folders())}/_env/ecs/definition"
 }
 
 dependency "cluster" {
@@ -35,23 +35,19 @@ dependency "alb" {
 }
 
 dependency "iam_task" {
-  config_path = "${dirname(find_in_parent_folders())}/env/global/iam/roles/ecs-task-exec"
+  config_path = "${dirname(find_in_parent_folders())}/_env/iam/ecs-task-exec"
 }
 
 dependency "iam_task_exec" {
-  config_path = "${dirname(find_in_parent_folders())}/env/global/iam/roles/ecs-task-exec"
+  config_path = "${dirname(find_in_parent_folders())}/_env/iam/ecs-task-exec"
 }
 
 dependency "iam_service" {
-  config_path = "${dirname(find_in_parent_folders())}/env/global/iam/roles/ecs-service"
+  config_path = "${dirname(find_in_parent_folders())}/_env/iam/ecs-service"
 }
 
 dependency "sg" {
-  config_path = "${dirname(find_in_parent_folders())}/env/${local.aws_region}/security-groups/${local.name}"
-}
-
-dependency "sg_lb" {
-  config_path = "${dirname(find_in_parent_folders())}/${local.folder_name}/${local.aws_region}/security-groups/lb"
+  config_path = "${dirname(find_in_parent_folders())}/_env/sg"
 }
 
 ## Variables:
@@ -104,12 +100,12 @@ inputs = {
   exec_enabled                       = try(local.global_vars.locals.ecs_settings[local.env]["exec_enabled"], true)
   tags                               = local.tags
 
-  # ecs_load_balancers = [
-  #   {
-  #     container_name   = dependency.definition.outputs.json_map_object.name
-  #     container_port   = dependency.definition.outputs.json_map_object.portMappings[0].containerPort
-  #     elb_name         = null #try(dependency.alb.outputs.target_group_arns[0], null) != null ? null : split("/", coalesce(try(dependency.alb.outputs.lb_arn_suffix, ""), "/elb/name"))[1]
-  #     target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:468629877310:targetgroup/microservices02-nghiand-frontend/4f7a3894676b5783" #try(dependency.alb.outputs.target_group_arns[0], null)
-  #   }
-  # ]
+  ecs_load_balancers = [
+  {
+    container_name   = dependency.definition.outputs.json_map_object.name
+    container_port   = dependency.definition.outputs.json_map_object.portMappings[0].containerPort
+    elb_name         = null #try(dependency.alb.outputs.target_group_arns[0], null) != null ? null : split("/", coalesce(try(dependency.alb.outputs.lb_arn_suffix, ""), "/elb/name"))[1]
+    target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:468629877310:targetgroup/microservices02-nghiand-frontend/4f7a3894676b5783" #try(dependency.alb.outputs.target_group_arns[0], null)
+  }
+  ]
 }

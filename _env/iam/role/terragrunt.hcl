@@ -4,6 +4,6 @@ include "root" {
 }
 
 include "modules" {
-    path = "${dirname(find_in_parent_folders())}/modules/ecs-services.hcl"
+    path = "${dirname(find_in_parent_folders())}/modules/iam-role.hcl"
 }
 
